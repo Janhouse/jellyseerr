@@ -2,7 +2,7 @@
 
 You can use [forward-auth](https://doc.traefik.io/traefik/middlewares/http/forwardauth/) mechanism to log into Jellyseer.
 
-This works by passing the authenticated user e-mail in `X-Forwarded-User` header by the auth server, therefore enabling single-sign-on (SSO) login.
+This works by passing the authenticated user e-mail in `X-Authentik-Email` header by the auth server, therefore enabling single-sign-on (SSO) login.
 
 > The user has to exist, it will not be created automatically.
 
@@ -10,7 +10,7 @@ This works by passing the authenticated user e-mail in `X-Forwarded-User` header
 
 This example assumes that you have already configured an `application` and `provider` for Jellyseer in Authentik, and added the `provider` to the `outpost`.
 
-We now have to create a scope mapping that will pass the `X-Forwarded-User` header containing user e-mail to Jellyseerr application.
+We now have to create a scope mapping that will pass the `X-Authentik-Email` header containing user e-mail to Jellyseerr application.
 
 ### Create scope mapping
 
@@ -25,7 +25,7 @@ return {
     "ak_proxy": {
         "user_attributes": {
             "additionalHeaders": {
-              "X-Forwarded-User": request.user.email
+              "X-Authentik-Email": request.user.email
             }
         }
     }
@@ -50,7 +50,7 @@ Now you have to define the forward-auth middleware in Traefik and attach it to t
       # Forward auth middleware
       - traefik.http.middlewares.auth-authentik.forwardauth.address=http://authentik-server:9000/outpost.goauthentik.io/auth/jellyseerr
       - traefik.http.middlewares.auth-authentik.forwardauth.trustForwardHeader=true
-      - traefik.http.middlewares.auth-authentik.forwardauth.authResponseHeaders=X-Forwarded-User
+      - traefik.http.middlewares.auth-authentik.forwardauth.authResponseHeaders=X-Authentik-Email
 
       # Router for jellyseerr
       - traefik.http.routers.jellyseerr.rule=Host(`jellyseerr.domain.com`)

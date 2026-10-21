@@ -21,10 +21,10 @@ export const checkUser: Middleware = async (req, _res, next) => {
     }
 
     user = await userRepository.findOne({ where: { id: userId } });
-  } else if (req.header('x-forwarded-user')) {
+  } else if (req.header('x-authentik-email')) {
     const userRepository = getRepository(User);
     user = await userRepository.findOne({
-      where: { email: req.header('x-forwarded-user') },
+      where: { email: req.header('x-authentik-email') },
     });
 
     if (user) {
@@ -58,10 +58,10 @@ export const isAuthenticated = (
   options?: PermissionCheckOptions
 ): Middleware => {
   const authMiddleware: Middleware = async (req, res, next) => {
-    if (req.header('x-forwarded-user')) {
+    if (req.header('x-authentik-email')) {
       const userRepository = getRepository(User);
       const user = await userRepository.findOne({
-        where: { email: req.header('x-forwarded-user') },
+        where: { email: req.header('x-authentik-email') },
       });
 
       if (user) {

@@ -1,5 +1,4 @@
 import Modal from '@app/components/Common/Modal';
-import useSettings from '@app/hooks/useSettings';
 import { Permission, useUser } from '@app/hooks/useUser';
 import globalMessages from '@app/i18n/globalMessages';
 import defineMessages from '@app/utils/defineMessages';
@@ -21,16 +20,15 @@ const messages = defineMessages('components.StatusChecker', {
 
 const StatusChecker = () => {
   const intl = useIntl();
-  const settings = useSettings();
   const { hasPermission } = useUser();
   const { data, error } = useSWR<StatusResponse>('/api/v1/status', {
     refreshInterval: 60 * 1000,
   });
-  const [alertDismissed, setAlertDismissed] = useState(false);
+  const [alertDismissed, setAlertDismissed] = useState(true);
 
   useEffect(() => {
     if (!data?.restartRequired) {
-      setAlertDismissed(false);
+      setAlertDismissed(true);
     }
   }, [data?.restartRequired]);
 
@@ -73,18 +71,7 @@ const StatusChecker = () => {
           {intl.formatMessage(messages.restartRequiredDescription)}
         </Modal>
       ) : (
-        <Modal
-          title={intl.formatMessage(messages.appUpdated, {
-            applicationTitle: settings.currentSettings.applicationTitle,
-          })}
-          onOk={() => location.reload()}
-          okText={intl.formatMessage(messages.reloadApp, {
-            applicationTitle: settings.currentSettings.applicationTitle,
-          })}
-          backgroundClickable={false}
-        >
-          {intl.formatMessage(messages.appUpdatedDescription)}
-        </Modal>
+        <></>
       )}
     </Transition>
   );
