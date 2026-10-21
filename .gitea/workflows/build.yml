@@ -1,0 +1,35 @@
+# Gitea Actions only: builds the forward-auth fork and pushes it to the Gitea
+# registry, where media's jellyseerr Deployment (keel force + Always) pulls it.
+# Its presence also stops Gitea from running upstream's .github/workflows.
+name: Build and push container to registry
+run-name: ${{ gitea.actor }} is building jellyseerr 🚀
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Login to Gitea Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.REGISTRY_URL }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
+      # --pull: never build on a stale cached node base (security releases).
+      - name: Build image
+        env:
+          REPOSITORY_IMAGE: ${{ vars.REPOSITORY_IMAGE }}
+          COMMIT_TAG: ${{ gitea.sha }}
+        run: |
+          docker build --pull --build-arg COMMIT_TAG="$COMMIT_TAG" \
+            -t "${REPOSITORY_IMAGE}:latest" -t "${REPOSITORY_IMAGE}:sha-${COMMIT_TAG:0:12}" .
+      - name: Push image
+        env:
+          REPOSITORY_IMAGE: ${{ vars.REPOSITORY_IMAGE }}
+          COMMIT_TAG: ${{ gitea.sha }}
+        run: |
+          docker push "${REPOSITORY_IMAGE}:sha-${COMMIT_TAG:0:12}"
+          docker push "${REPOSITORY_IMAGE}:latest"
