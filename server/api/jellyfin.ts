@@ -108,7 +108,7 @@ class JellyfinAPI extends ExternalAPI {
       {},
       {
         headers: {
-          'X-Emby-Authorization': authHeaderVal,
+          Authorization: authHeaderVal,
         },
       }
     );

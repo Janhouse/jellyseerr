@@ -19,7 +19,7 @@ class JellyAPI {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-Emby-Authorization':
+            Authorization:
               'MediaBrowser Client="Jellyfin Web", Device="Firefox", DeviceId="TW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NDsgcnY6ODUuMCkgR2Vja28vMjAxMDAxMDEgRmlyZWZveC84NS4wfDE2MTI5MjcyMDM5NzM1", Version="10.8.0"',
           },
           body: JSON.stringify({
